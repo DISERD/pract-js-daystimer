@@ -8,9 +8,9 @@ const startBtn = document.querySelector('.timer-btn[data-action="start"]');
 const stopBtn = document.querySelector('.timer-btn[data-action="stop"]');
 const resetBtn = document.querySelector('.timer-btn[data-action="reset"]');
 
-let startTime = 0;
+let startTimerTime = 0;
 let timerId = null;
-let isActive = false;
+let timerIsActive = false;
 let accumulatedTime = 0;
 
 function pad(value) {
@@ -19,7 +19,7 @@ function pad(value) {
 
 function getTimeComponents(time) {
   const totalSeconds = Math.floor(time / 1000);
-  
+
   const hours = pad(Math.floor(totalSeconds / 3600));
   const mins = pad(Math.floor((totalSeconds % 3600) / 60));
   const secs = pad(totalSeconds % 60);
@@ -27,44 +27,45 @@ function getTimeComponents(time) {
   return { hours, mins, secs };
 }
 
-function updateClockface(time) {
-  const { hours, mins, secs } = getTimeComponents(time);
-  output.textContent = `${hours}:${mins}:${secs}`;
-}
-
 startBtn.addEventListener("click", () => {
-  if (isActive) return;
+  console.log("start timer");
 
-  isActive = true;
-  startBtn.classList.add("is-active");
-  stopBtn.classList.remove("is-active");
+  if (timerIsActive) {
+    return;
+  }
 
-  startTime = Date.now() - accumulatedTime;
+  startTimerTime = Date.now() - accumulatedTime;
 
   timerId = setInterval(() => {
     const currentTime = Date.now();
-    const deltaTime = currentTime - startTime;
-    updateClockface(deltaTime);
+
+    let delta = currentTime - startTimerTime;
+
+    const { hours, mins, secs } = getTimeComponents(delta);
+
+    output.textContent = `${hours}:${mins}:${secs}`;
   }, 1000);
+
+  timerIsActive = true;
 });
 
 stopBtn.addEventListener("click", () => {
-  if (!isActive) return;
+  console.log("stop timer");
 
-  isActive = false;
-  startBtn.classList.remove("is-active");
-  stopBtn.classList.add("is-active");
+  if (!timerIsActive) {
+    return;
+  }
 
   clearInterval(timerId);
-  accumulatedTime = Date.now() - startTime;
+  accumulatedTime = Date.now() - startTimerTime;
+  timerIsActive = false;
 });
 
 resetBtn.addEventListener("click", () => {
-  isActive = false;
-  startBtn.classList.remove("is-active");
-  stopBtn.classList.remove("is-active");
+  console.log("reset timer");
 
   clearInterval(timerId);
+  timerIsActive = false;
   accumulatedTime = 0;
-  updateClockface(0);
+  output.textContent = "00:00:00";
 });
