@@ -29,43 +29,32 @@ function getTimeComponents(time) {
 
 startBtn.addEventListener("click", () => {
   console.log("start timer");
-
   if (timerIsActive) {
-    return;
+    return
   }
-
-  startTimerTime = Date.now() - accumulatedTime;
-
+  
+  startTimerTime = Date.now();
   timerId = setInterval(() => {
     const currentTime = Date.now();
-
-    let delta = currentTime - startTimerTime;
-
+    let delta = (currentTime - startTimerTime) + accumulatedTime;
+    console.log(delta);
     const { hours, mins, secs } = getTimeComponents(delta);
-
     output.textContent = `${hours}:${mins}:${secs}`;
   }, 1000);
-
+  
   timerIsActive = true;
-});
-
-stopBtn.addEventListener("click", () => {
-  console.log("stop timer");
-
-  if (!timerIsActive) {
-    return;
-  }
-
-  clearInterval(timerId);
-  accumulatedTime = Date.now() - startTimerTime;
-  timerIsActive = false;
-});
-
+})
 resetBtn.addEventListener("click", () => {
   console.log("reset timer");
-
   clearInterval(timerId);
   timerIsActive = false;
+  output.textContent = "00:00:00"
   accumulatedTime = 0;
-  output.textContent = "00:00:00";
+});
+stopBtn.addEventListener("click", () => {
+  console.log("stop timer");
+  clearInterval(timerId);
+  timerIsActive = false;
+  accumulatedTime = Date.now() - startTimerTime;
+  
 });
